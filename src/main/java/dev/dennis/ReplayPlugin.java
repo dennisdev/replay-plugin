@@ -121,7 +121,7 @@ public class ReplayPlugin extends Plugin
 			this.proxyServer.start(PORT, this.recordClientInitializer);
 		} else {
 			this.proxyServer.start(PORT, this.replayClientInitializer);
-			this.replayClientInitializer.setRecordingPath(Paths.get("recordings", "2024-05-14_01-28-04"));
+			this.replayClientInitializer.setRecordingPath(Paths.get("recordings", "2024-05-14_01-56-16"));
 		}
 	}
 

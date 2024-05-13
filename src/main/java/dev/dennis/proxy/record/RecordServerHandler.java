@@ -24,6 +24,8 @@ public class RecordServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     private RecordingWriter recordingWriter;
 
+    private int[] initialIsaac;
+
     public RecordServerHandler(ReplayPlugin replayPlugin, ChannelHandlerContext clientChannel) {
         this.replayPlugin = replayPlugin;
         this.clientChannel = clientChannel;
@@ -31,7 +33,8 @@ public class RecordServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Connected to the server: {}, {}", ctx.channel(), this.replayPlugin.getIsaacKey());
+        this.initialIsaac = this.replayPlugin.getIsaacKey();
+        log.info("Connected to the server: {}, {}", ctx.channel(), this.initialIsaac);
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Calendar.getInstance().getTime());
         Path recordingPath = Paths.get("recordings", timestamp);
         Files.createDirectories(recordingPath);
@@ -63,7 +66,7 @@ public class RecordServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
         if (this.recordingWriter != null) {
             if (!this.recordingWriter.isIsaacWritten()) {
                 int[] isaacKey = replayPlugin.getIsaacKey();
-                if (isaacKey != null) {
+                if (isaacKey != this.initialIsaac) {
                     log.info("Writing isaac: {}", isaacKey);
                     this.recordingWriter.writeIsaac(isaacKey);
                 }
